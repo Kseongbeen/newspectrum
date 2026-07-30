@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>그림 5-1. 뉴스펙트럼 실서비스 파이프라인 아키텍처(안)</title>
+<style>
+  :root{
+    --surface:#ffffff; --page:#f3f3f0; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --border:rgba(11,11,11,.10);
+    --prog:#2a78d6; --cons:#e34948; --blue-bg:#eaf2fc; --blue-dk:#1c5cab;
+    --red-bg:#fbeaea; --red-dk:#a02c2c; --neutral-bg:#f0efec;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--surface);font-family:"Malgun Gothic",system-ui,sans-serif;color:var(--ink);padding:18px 22px;}
+  .row{display:grid;grid-template-columns:1fr 30px 1fr 30px 1.15fr 30px 1fr 30px 1fr;align-items:stretch;gap:0;max-width:1220px;margin:0 auto;}
+  .stage{border:1px solid var(--grid);border-radius:12px;padding:12px 13px;background:var(--surface);display:flex;flex-direction:column;gap:8px;}
+  .stage .h{font-size:12.5px;font-weight:800;letter-spacing:-.2px;}
+  .stage .h .no{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;text-align:center;line-height:18px;margin-right:6px;font-weight:700;}
+  .box{border:1px solid var(--grid);border-radius:8px;padding:8px 10px;font-size:11.5px;line-height:1.5;color:var(--ink2);background:var(--neutral-bg);}
+  .box b{color:var(--ink);display:block;font-size:11.8px;margin-bottom:2px;}
+  .box.blue{background:var(--blue-bg);border-color:#cfe0f7;}
+  .box.blue b{color:var(--blue-dk);}
+  .box.red{background:var(--red-bg);border-color:#f3d3d3;}
+  .box.red b{color:var(--red-dk);}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:17px;}
+  .tag{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px;background:var(--red-bg);color:var(--red-dk);margin-left:4px;vertical-align:1px;}
+  .foot{max-width:1220px;margin:12px auto 0;font-size:11px;color:var(--muted);line-height:1.6;}
+  .foot b{color:var(--ink2);}
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="stage">
+      <div class="h"><span class="no">1</span>수집 (자동 배치)</div>
+      <div class="box"><b>앵커 아카이브</b>정당 대변인 브리핑·보도자료 게시판 크롤러, 국회 회의록 Open API — 이슈별 양당 논평 자동 갱신</div>
+      <div class="box"><b>기사 수집</b>포털·언론사 RSS, 이슈 클러스터링(동일 사안 묶음)</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="h"><span class="no">2</span>전처리</div>
+      <div class="box"><b>인용구 분리</b>직접 인용(따옴표)과 기자 서술 분리</div>
+      <div class="box"><b>발화 주체 귀속</b>인용문을 화자(정당·노조·재계 등)에 연결 — 개체명 인식</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="h"><span class="no">3</span>스탠스 엔진</div>
+      <div class="box blue"><b>문장 임베딩 유사도</b>기사 서술 ↔ 양당 논평 (SBERT), 주제 성분 제거</div>
+      <div class="box blue"><b>인용 전달 태도</b>인용 앞뒤 서술어의 긍·부정 결합 → “인용하며 비판” 오분류 차단 <span class="tag">루프홀 해결</span></div>
+      <div class="box blue"><b>LLM 보조 판정</b>경계 사례(중립 밴드 부근)만 근거 생성형 판정</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="h"><span class="no">4</span>검증 게이트</div>
+      <div class="box"><b>앵커 언론사 교차 검증</b>한겨레·경향 ↔ 조선·동아 분포 방향 확인</div>
+      <div class="box"><b>이슈 게이트</b>두 축 불일치 시 “정파 대립 이슈 아님” 처리</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="h"><span class="no">5</span>서비스</div>
+      <div class="box"><b>이슈 스펙트럼 뷰</b>기사별 좌표 + 근거 보기(인용 구조·책임 귀인·어휘)</div>
+      <div class="box"><b>소비 대시보드</b>이용자 좌표·분포, 블라인드스팟 알림</div>
+    </div>
+  </div>
+  <div class="foot">그림 5-1. 뉴스펙트럼 실서비스 파이프라인 아키텍처(안). <b>③ 스탠스 엔진</b>은 파일럿에서 확인된 두 실패 유형 — 어휘 중복 의존(TF-IDF)과 주제 유사성 지배(단순 임베딩) — 을 인용 귀속·전달 태도 결합과 경계 사례 LLM 판정으로 보완한다. 좌표 부호는 본문 5.2절의 규약(음=진보측, 양=보수측)을 따른다.</div>
+</body>
+</html>

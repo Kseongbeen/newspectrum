@@ -1,0 +1,334 @@
+{
+ "model": "jhgan/ko-sroberta-multitask",
+ "convention": "+ = 보수측(국민의힘 논평 유사), − = 진보측(민주당 논평 유사)",
+ "variant": "주제 성분 제거(전체 문장 평균 벡터 차감) 후 문서 평균 임베딩 — 4개 집계 변형 중 최선",
+ "variant_plain": {
+  "desc": "원안(주제 성분 제거 없음)",
+  "agreement": 46.7,
+  "severe_errors": 4
+ },
+ "n_articles": 30,
+ "agreement": {
+  "n_agree": 15,
+  "rate": 50.0,
+  "severe_errors": 4
+ },
+ "anchor": {
+  "n": 9,
+  "n_sign_ok": 5,
+  "n_opposite": 3,
+  "opposite_rate": 33.3
+ },
+ "group_scores": {
+  "P": -0.149,
+  "N": 0.032,
+  "C": 0.21
+ },
+ "baseline_comparison": {
+  "tfidf_agreement": 46.7,
+  "tfidf_severe": 0,
+  "tfidf_anchor_sign_ok": 6
+ },
+ "results": [
+  {
+   "outlet": "한겨레",
+   "type": "사설",
+   "title": "[사설] 노란봉투법 국회 통과, 노사관계 새틀 짜기 시작됐다",
+   "manual": "P",
+   "score": -1.0,
+   "pred": "P",
+   "score_plain": -1.0,
+   "pred_baseline": "P"
+  },
+  {
+   "outlet": "경향신문",
+   "type": "사설",
+   "title": "[사설] '노사상생' 노란봉투법 마침내 통과, 시행 준비 만전 기하길",
+   "manual": "P",
+   "score": -1.0,
+   "pred": "P",
+   "score_plain": -0.988,
+   "pred_baseline": "P"
+  },
+  {
+   "outlet": "경향신문",
+   "type": "기사",
+   "title": "노란봉투법 통과···제2의 '성기훈' 이젠 막을 수 있을까 [점선면]",
+   "manual": "N",
+   "score": -0.831,
+   "pred": "P",
+   "score_plain": -0.822,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "이데일리",
+   "type": "기사",
+   "title": "노란봉투법, 與 주도로 국회 통과(상보)",
+   "manual": "N",
+   "score": -0.624,
+   "pred": "P",
+   "score_plain": -0.58,
+   "pred_baseline": "P"
+  },
+  {
+   "outlet": "파이낸셜뉴스",
+   "type": "기사",
+   "title": "\"노동계 요구만 듣나\"...'뿔난' 경제 6단체, 노란봉투법 '3대 요청사항' 제시",
+   "manual": "C",
+   "score": -0.623,
+   "pred": "P",
+   "score_plain": -0.608,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "동아일보",
+   "type": "기사",
+   "title": "국회 본회의 통과한 '노란봉투법'…전문가들 \"해외서 유례 찾기 어려워\"",
+   "manual": "C",
+   "score": -0.609,
+   "pred": "P",
+   "score_plain": -0.774,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "한겨레",
+   "type": "기사",
+   "title": "노란봉투법, 환노위 통과…노동자 옥죄는 손배소 제한 \"역사적 진전\"",
+   "manual": "P",
+   "score": -0.534,
+   "pred": "P",
+   "score_plain": -0.595,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "뉴스타파",
+   "type": "기사",
+   "title": "[미니 다큐] 죽음의 '손배 폭탄' 막을 노란봉투법...20년 만에 국회 통과",
+   "manual": "P",
+   "score": -0.467,
+   "pred": "P",
+   "score_plain": -0.656,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "시사IN",
+   "type": "기사",
+   "title": "팩트체크로 풀어보는 노란봉투법 이후의 세계",
+   "manual": "P",
+   "score": -0.343,
+   "pred": "P",
+   "score_plain": -0.316,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "머니투데이",
+   "type": "기사",
+   "title": "노란봉투법, 13시간만에 국회 8부능선 넘어…\"청부입법\" \"참담\" 반발도",
+   "manual": "N",
+   "score": -0.131,
+   "pred": "N",
+   "score_plain": -0.166,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "동아일보",
+   "type": "사설",
+   "title": "[사설] \"정리해고도 파업 가능\"… 이래서야 기업 구조조정 가능할까",
+   "manual": "C",
+   "score": -0.069,
+   "pred": "N",
+   "score_plain": 0.112,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "뉴시스",
+   "type": "기사",
+   "title": "노란봉투법 본회의 상정…野 김형동 필리버스터 5시간만에 종료(종합)",
+   "manual": "N",
+   "score": -0.066,
+   "pred": "N",
+   "score_plain": 0.033,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "디지털타임스",
+   "type": "기사",
+   "title": "[기획] \"노란봉투법만이라도 1년 늦춰달라\"… 재계, '벼랑끝 호소'",
+   "manual": "C",
+   "score": -0.003,
+   "pred": "N",
+   "score_plain": -0.09,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "이데일리",
+   "type": "사설",
+   "title": "[사설] 기어이 강행한 노란봉투법, 기업이 천덕꾸러기인가",
+   "manual": "C",
+   "score": 0.038,
+   "pred": "N",
+   "score_plain": 0.064,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "연합뉴스",
+   "type": "기사",
+   "title": "노동계 '하투' 본격화…노란봉투법후 첫 '원청 상대' 파업 임박",
+   "manual": "N",
+   "score": 0.041,
+   "pred": "N",
+   "score_plain": 0.228,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "중앙일보",
+   "type": "기사",
+   "title": "노란봉투법 통과 땐…\"해외공장 지어도 파업 근거된다\" [팩트체크]",
+   "manual": "N",
+   "score": 0.054,
+   "pred": "N",
+   "score_plain": 0.108,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "조선일보",
+   "type": "사설",
+   "title": "[사설] 대법, 노란봉투법 모태가 된 하급심 판결 뒤집었다",
+   "manual": "C",
+   "score": 0.076,
+   "pred": "N",
+   "score_plain": -0.052,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "주간동아",
+   "type": "기사",
+   "title": "'노란봉투법' 통과되자 로봇주가 움직였다",
+   "manual": "N",
+   "score": 0.089,
+   "pred": "N",
+   "score_plain": -0.256,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "한국일보",
+   "type": "기사",
+   "title": "\"노란봉투법, 불법파업 조장\" 우려에 고용부 \"책임 묻되 손배 폭탄 막는 것\"",
+   "manual": "P",
+   "score": 0.162,
+   "pred": "N",
+   "score_plain": 0.135,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "매경이코노미",
+   "type": "기사",
+   "title": "노란봉투법 5대 쟁점은…'진짜 사장' 누구, 정부도 사용자?",
+   "manual": "C",
+   "score": 0.235,
+   "pred": "N",
+   "score_plain": 0.165,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "서울경제",
+   "type": "기사",
+   "title": "[속보] 국회, '노란봉투법' 필리버스터 강제 종결 시도···종료 표결 시작",
+   "manual": "N",
+   "score": 0.378,
+   "pred": "C",
+   "score_plain": 0.601,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "중앙일보",
+   "type": "기사",
+   "title": "머리띠 두른 9000명 \"원청 나와라\"…이런 협력업체 수천개 [노란봉투법 초읽기]",
+   "manual": "C",
+   "score": 0.49,
+   "pred": "C",
+   "score_plain": 0.335,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "한국경제",
+   "type": "사설",
+   "title": "[사설] 'AI 대전환' 성장 전략과 노란봉투법 공존 가능한가",
+   "manual": "C",
+   "score": 0.497,
+   "pred": "C",
+   "score_plain": 0.505,
+   "pred_baseline": "C"
+  },
+  {
+   "outlet": "경향신문",
+   "type": "기사",
+   "title": "'노란봉투법' 국회 통과…여당 '2차 상법 개정안'도 상정",
+   "manual": "N",
+   "score": 0.661,
+   "pred": "C",
+   "score_plain": 0.566,
+   "pred_baseline": "C"
+  },
+  {
+   "outlet": "헤럴드경제",
+   "type": "기사",
+   "title": "노란봉투법 與 주도 본회의 통과…野 \"헌법소원 검토\" [이런정치]",
+   "manual": "C",
+   "score": 0.741,
+   "pred": "C",
+   "score_plain": 0.574,
+   "pred_baseline": "C"
+  },
+  {
+   "outlet": "YTN",
+   "type": "방송리포트",
+   "title": "노란봉투법 국회 통과...\"역사적\" vs \"민주노총 하수인\"",
+   "manual": "N",
+   "score": 0.75,
+   "pred": "C",
+   "score_plain": 0.884,
+   "pred_baseline": "C"
+  },
+  {
+   "outlet": "매경이코노미",
+   "type": "기사",
+   "title": "\"한국에서 철수\" \"참담한 심정\" 언터처블 노란봉투법? [스페셜리포트]",
+   "manual": "C",
+   "score": 0.862,
+   "pred": "C",
+   "score_plain": 0.799,
+   "pred_baseline": "C"
+  },
+  {
+   "outlet": "시대(동행미디어)",
+   "type": "기사",
+   "title": "노란봉투법 국회 통과… 산업계 \"보완 입법 없인 현장 혼란 불가피\"",
+   "manual": "C",
+   "score": 0.883,
+   "pred": "C",
+   "score_plain": 0.835,
+   "pred_baseline": "C"
+  },
+  {
+   "outlet": "한겨레",
+   "type": "기사",
+   "title": "[팩트체크] 노란봉투법 통과되면 기업이 1년 내내 교섭해야 한다고요?",
+   "manual": "P",
+   "score": 0.988,
+   "pred": "C",
+   "score_plain": 1.0,
+   "pred_baseline": "N"
+  },
+  {
+   "outlet": "프레시안",
+   "type": "기사",
+   "title": "파업이 길어져야 이윤이 커지는 이상한 기업이 있다?",
+   "manual": "P",
+   "score": 1.0,
+   "pred": "C",
+   "score_plain": 1.0,
+   "pred_baseline": "P"
+  }
+ ]
+}

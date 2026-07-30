@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>그림 5-3. 뉴스펙트럼 화면 설계(안)</title>
+<style>
+  :root{
+    --surface:#fcfcfb; --page:#f3f3f0; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --base:#c3c2b7; --border:rgba(11,11,11,.10);
+    --prog:#2a78d6; --cons:#d03b3b; --neutral:#9b9a93; --neutral-bg:#f0efec;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--page);font-family:"Malgun Gothic",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);padding:28px;}
+  .frame{max-width:1180px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 14px rgba(11,11,11,.06);}
+  /* 상단 바 */
+  .topbar{display:flex;align-items:center;gap:22px;padding:14px 24px;border-bottom:1px solid var(--grid);}
+  .logo{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+  .logo .sp{background:linear-gradient(90deg,var(--prog),var(--neutral),var(--cons));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .tabs{display:flex;gap:4px;font-size:13px;color:var(--ink2);}
+  .tabs span{padding:6px 12px;border-radius:8px;cursor:pointer;}
+  .tabs span:hover{background:var(--neutral-bg);}
+  .tabs .on{background:var(--neutral-bg);color:var(--ink);font-weight:700;}
+  .me{margin-left:auto;font-size:12.5px;color:var(--ink2);display:flex;align-items:center;gap:8px;}
+  .me .dot{width:10px;height:10px;border-radius:50%;background:var(--neutral);display:inline-block;}
+  /* 이슈 헤더 + 스펙트럼 */
+  .issue{padding:20px 24px 6px;}
+  .issue h1{font-size:19px;letter-spacing:-.3px;}
+  .issue .meta{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  /* 이슈 탐색 목록 (탭 전환 시 표시) */
+  .explore{display:none;margin:14px 24px 8px;border:1px solid var(--grid);border-radius:12px;overflow:hidden;}
+  .explore .row{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--grid);cursor:pointer;font-size:13px;}
+  .explore .row:last-child{border-bottom:none;}
+  .explore .row:hover{background:var(--neutral-bg);}
+  .explore .row.sel{background:#f7faff;}
+  .explore .cnt{margin-left:auto;font-size:11.5px;color:var(--muted);white-space:nowrap;}
+  .mini{position:relative;width:120px;height:6px;border-radius:3px;flex:none;
+        background:linear-gradient(90deg,var(--prog) 0%,#b7d3f6 38%,var(--neutral-bg) 50%,#f3c1c1 62%,var(--cons) 100%);}
+  .mini i{position:absolute;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--ink);transform:translateX(-50%);}
+  .spectrum{margin:18px 24px 8px;padding:16px 18px 30px;border:1px solid var(--grid);border-radius:12px;position:relative;}
+  .spectrum .cap{font-size:12px;color:var(--ink2);font-weight:700;margin-bottom:14px;}
+  .axis{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--prog) 0%,#b7d3f6 38%,var(--neutral-bg) 50%,#f3c1c1 62%,var(--cons) 100%);}
+  .tick{position:absolute;top:14px;font-size:11px;color:var(--muted);transform:translateX(-50%);}
+  .adot{position:absolute;top:-7px;width:10px;height:10px;border-radius:50%;border:2px solid var(--surface);transform:translateX(-50%);cursor:pointer;transition:transform .12s;}
+  .adot:hover{transform:translateX(-50%) scale(1.5);}
+  .adot.p{background:var(--prog)} .adot.n{background:var(--neutral)} .adot.c{background:var(--cons)}
+  .mymark{position:absolute;top:-16px;transform:translateX(-50%);text-align:center;}
+  .mymark .flag{font-size:10.5px;font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--base);border-radius:6px;padding:2px 6px;white-space:nowrap;}
+  .mymark .stem{width:2px;height:14px;background:var(--ink);margin:0 auto;}
+  /* 툴팁 */
+  .tip{position:fixed;display:none;z-index:9;background:#fff;border:1px solid var(--base);border-radius:8px;
+       padding:8px 11px;font-size:11.5px;line-height:1.5;color:var(--ink2);box-shadow:0 4px 14px rgba(11,11,11,.12);
+       max-width:260px;pointer-events:none;}
+  .tip b{color:var(--ink);}
+  /* 3열 관점 */
+  .cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:14px 24px 20px;}
+  .col h2{font-size:13px;padding:8px 12px;border-radius:8px;margin-bottom:10px;display:flex;justify-content:space-between;}
+  .col.pro h2{background:#eaf2fc;color:#1c5cab;} .col.neu h2{background:var(--neutral-bg);color:var(--ink2);} .col.con h2{background:#fbeaea;color:#a02c2c;}
+  .card{border:1px solid var(--grid);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff;}
+  .card.hl{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink);}
+  .card .src{font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;}
+  .badge{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;}
+  .badge.p{background:#eaf2fc;color:#1c5cab;} .badge.n{background:var(--neutral-bg);color:var(--ink2);} .badge.c{background:#fbeaea;color:#a02c2c;}
+  .card .tit{font-size:13.5px;font-weight:700;line-height:1.45;margin:7px 0 8px;letter-spacing:-.2px;}
+  .why{font-size:11.5px;color:var(--prog);font-weight:700;cursor:pointer;}
+  .why:hover{text-decoration:underline;}
+  /* 관점 종합 (열 상단 요약) */
+  .syn{border:1px solid var(--grid);border-left:3px solid var(--base);border-radius:10px;
+       padding:10px 13px;margin-bottom:10px;font-size:11.6px;color:var(--ink2);line-height:1.62;background:#fff;}
+  .col.pro .syn{border-left-color:var(--prog);}
+  .col.neu .syn{border-left-color:var(--neutral);}
+  .col.con .syn{border-left-color:var(--cons);}
+  .syn .h{font-size:10.5px;font-weight:800;color:var(--muted);margin-bottom:4px;letter-spacing:.2px;}
+  .syn .kw{display:inline-block;background:var(--neutral-bg);border-radius:6px;padding:0 6px;
+           font-size:10.5px;font-weight:700;color:var(--ink);margin:0 2px;}
+  /* 근거 패널 */
+  .evi{border:1.5px solid var(--prog);border-radius:10px;padding:12px 14px;background:#f7faff;margin-bottom:10px;}
+  .evi.hidden{display:none;}
+  .evi .h{font-size:12px;font-weight:800;color:#1c5cab;margin-bottom:8px;}
+  .evi ul{list-style:none;font-size:11.8px;color:var(--ink2);line-height:1.65;}
+  .evi b{color:var(--ink);}
+  /* 하단 대시보드 */
+  .dash{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px;padding:0 24px 24px;}
+  .dash.hl .panel{border-color:var(--ink);}
+  .panel{border:1px solid var(--grid);border-radius:12px;padding:14px 16px;transition:border-color .3s;}
+  .panel .h{font-size:12.5px;font-weight:800;margin-bottom:10px;}
+  .gauge{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--prog),var(--neutral-bg) 50%,var(--cons));margin:22px 6px 18px;}
+  .gpin{position:absolute;top:-20px;left:59%;transform:translateX(-50%);text-align:center;}
+  .gpin .v{font-size:15px;font-weight:800;}
+  .gpin .stem{width:2px;height:16px;background:var(--ink);margin:2px auto 0;}
+  .glab{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);padding:0 6px;}
+  .bars{display:flex;align-items:flex-end;gap:5px;height:64px;margin:8px 4px 4px;}
+  .bar{flex:1;border-radius:3px 3px 0 0;cursor:pointer;}
+  .bar:hover{opacity:.75;}
+  .bar.p{background:var(--prog)} .bar.n{background:var(--base)} .bar.c{background:var(--cons)}
+  .blab{display:flex;gap:5px;font-size:10px;color:var(--muted);text-align:center;margin-top:4px;}
+  .blab span{flex:1}
+  .blind{font-size:12px;color:var(--ink2);line-height:1.7;}
+  .blind .warn{display:inline-block;background:#fbeaea;color:#a02c2c;font-weight:700;border-radius:6px;padding:1px 7px;font-size:11px;}
+  .note{max-width:1180px;margin:10px auto 0;font-size:11.5px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="topbar">
+    <div class="logo">뉴스<span class="sp">펙트럼</span></div>
+    <div class="tabs" id="tabs"><span class="on">오늘의 이슈</span><span>이슈 탐색</span><span>내 스펙트럼</span></div>
+    <div class="me"><span class="dot"></span>내 최근 30일 좌표 +0.18</div>
+  </div>
+
+  <div class="issue">
+    <h1 id="issueTitle">노란봉투법(노동조합법 2·3조 개정안) 국회 통과</h1>
+    <div class="meta" id="issueMeta">분석 기사 47건 · 앵커: 더불어민주당 논평 3건 / 국민의힘 논평 4건 · 갱신 10분 전</div>
+  </div>
+
+  <div class="explore" id="explore">
+    <div class="row sel" data-i="0"><span class="mini"><i style="left:41%"></i></span>노란봉투법(노동조합법 2·3조 개정안) 국회 통과<span class="cnt">기사 47건 · 갱신 10분 전</span></div>
+    <div class="row" data-i="1"><span class="mini"><i style="left:63%"></i></span>2026년 최저임금 결정… 노사 반응 엇갈려<span class="cnt">기사 38건 · 갱신 25분 전</span></div>
+    <div class="row" data-i="2"><span class="mini"><i style="left:47%"></i></span>반도체 특별법 국회 상임위 통과<span class="cnt">기사 29건 · 갱신 1시간 전</span></div>
+  </div>
+
+  <div class="spectrum">
+    <div class="cap">이슈 스펙트럼 — 기사별 스탠스 좌표 (−1 진보측 ← 0 중립 → +1 보수측)</div>
+    <div class="axis" id="axis">
+      <span class="adot p" style="left:9%"  data-tip="<b>ㅂ신문</b> · −0.82<br>&quot;거부권 정국 끝… 노동권 복원의 첫걸음&quot;"></span>
+      <span class="adot p" style="left:14%" data-tip="<b>ㅅ방송</b> · −0.72<br>노동계 &quot;손배 남용 제동&quot; 환영 일색"></span>
+      <span class="adot p" style="left:19%" data-tip="<b>ㄱ신문</b> · −0.62<br>&quot;노동자 손배 폭탄 사라진다&quot;… 20년 만의 입법 결실" data-card="c1"></span>
+      <span class="adot p" style="left:24%" data-tip="<b>ㅇ일보</b> · −0.52<br>하청 노동자 &quot;진짜 사장과 교섭 길 열렸다&quot;"></span>
+      <span class="adot p" style="left:30%" data-tip="<b>ㅈ뉴스</b> · −0.40<br>노란봉투법 통과에 노동계 &quot;늦었지만 환영&quot;"></span>
+      <span class="adot n" style="left:41%" data-tip="<b>ㄷ방송</b> · −0.08<br>노조법 개정안 무엇이 바뀌나… 쟁점 조항 일문일답" data-card="c3"></span>
+      <span class="adot n" style="left:46%" data-tip="<b>ㅊ통신</b> · −0.04<br>노란봉투법 표결 처리… 여야 공방 계속"></span>
+      <span class="adot n" style="left:50%" data-tip="<b>ㄴ통신사</b> · +0.03<br>노란봉투법 국회 본회의 통과… 재석 186인 중 찬성 183인" data-card="c2"></span>
+      <span class="adot n" style="left:54%" data-tip="<b>ㅋ경제</b> · +0.08<br>노조법 개정 주요 일지… 발의부터 통과까지"></span>
+      <span class="adot n" style="left:58%" data-tip="<b>ㅌ신문</b> · +0.16<br>노란봉투법 통과… 시행까지 남은 절차는"></span>
+      <span class="adot c" style="left:68%" data-tip="<b>ㅍ일보</b> · +0.36<br>경영계 &quot;교섭 창구 혼란 불가피&quot; 우려"></span>
+      <span class="adot c" style="left:74%" data-tip="<b>ㅁ경제</b> · +0.55<br>기업들 &quot;노사 리스크 커졌다&quot;… 헌법소원 검토" data-card="c5"></span>
+      <span class="adot c" style="left:80%" data-tip="<b>ㄹ일보</b> · +0.71<br>경영계 &quot;불법 파업 면책법&quot;… 투자 위축 우려 확산" data-card="c4"></span>
+      <span class="adot c" style="left:86%" data-tip="<b>ㅎ신문</b> · +0.80<br>&quot;파업 공화국 되나&quot;… 산업 현장 초비상"></span>
+      <span class="adot c" style="left:91%" data-tip="<b>ㅏ경제</b> · +0.88<br>사설: 기업 옥죄는 입법 폭주를 우려한다"></span>
+      <span class="mymark" style="left:59%"><span class="flag">내 소비 좌표</span><span class="stem"></span></span>
+      <span class="tick" style="left:0%">−1.0</span><span class="tick" style="left:25%">−0.5</span>
+      <span class="tick" style="left:50%">0</span><span class="tick" style="left:75%">+0.5</span><span class="tick" style="left:100%">+1.0</span>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="col pro">
+      <h2><span>진보측 관점</span><span>18건</span></h2>
+      <div class="syn">
+        <div class="h">관점 종합 · 추출 요약</div>
+        진보측 시각은 ㄱ신문·ㅂ신문 등 5개 언론사 18건에서 나타난다.
+        다른 성향권 대비 <span class="kw">노동권 복원</span><span class="kw">손배 제한</span> 언급이 잦다.
+      </div>
+      <div class="card" id="c1">
+        <div class="src"><span>ㄱ신문</span><span class="badge p">−0.62</span></div>
+        <div class="tit">"노동자 손배 폭탄 사라진다"… 20년 만의 입법 결실</div>
+        <div class="why">근거 보기 ▴</div>
+      </div>
+      <div class="evi">
+        <div class="h">이 기사가 −0.62인 이유</div>
+        <ul>
+          <li>· <b>인용 구조</b>: 노동계·여당 인용 6회(우호) vs 경영계 1회</li>
+          <li>· <b>책임 귀인</b>: 갈등 원인을 "사용자의 교섭 회피"로 귀속</li>
+          <li>· <b>어휘 선택</b>: "손배 폭탄", "노동권 사각지대"</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col neu">
+      <h2><span>중립 (사실전달형)</span><span>14건</span></h2>
+      <div class="syn">
+        <div class="h">관점 종합 · 추출 요약</div>
+        중립 시각은 ㄴ통신사·ㄷ방송 등 6개 언론사 14건에서 나타난다.
+        <span class="kw">표결 경과</span><span class="kw">조문 해설</span> 중심의 사실전달형 보도다.
+      </div>
+      <div class="card" id="c2">
+        <div class="src"><span>ㄴ통신사</span><span class="badge n">+0.03</span></div>
+        <div class="tit">노란봉투법 국회 본회의 통과… 재석 186인 중 찬성 183인</div>
+        <div class="why">근거 보기 ▾</div>
+      </div>
+      <div class="evi hidden">
+        <div class="h">이 기사가 +0.03인 이유</div>
+        <ul>
+          <li>· <b>인용 구조</b>: 여야·노사 인용 각 2회로 균형</li>
+          <li>· <b>책임 귀인</b>: 원인 귀속 서술 없음 (표결 사실 중심)</li>
+          <li>· <b>어휘 선택</b>: 평가 어휘 없음 ("통과", "재석", "찬성")</li>
+        </ul>
+      </div>
+      <div class="card" id="c3">
+        <div class="src"><span>ㄷ방송</span><span class="badge n">−0.08</span></div>
+        <div class="tit">노조법 개정안 무엇이 바뀌나… 쟁점 조항 일문일답</div>
+        <div class="why">근거 보기 ▾</div>
+      </div>
+      <div class="evi hidden">
+        <div class="h">이 기사가 −0.08인 이유</div>
+        <ul>
+          <li>· <b>인용 구조</b>: 전문가 해설 중심, 진영 인용 최소</li>
+          <li>· <b>책임 귀인</b>: 조문 변화 설명에 한정</li>
+          <li>· <b>어휘 선택</b>: "쟁점", "일문일답" 등 중립 서술</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col con">
+      <h2><span>보수측 관점</span><span>15건</span></h2>
+      <div class="syn">
+        <div class="h">관점 종합 · 추출 요약</div>
+        보수측 시각은 ㄹ일보·ㅁ경제 등 5개 언론사 15건에서 나타난다.
+        다른 성향권 대비 <span class="kw">경영 리스크</span><span class="kw">투자 위축</span> 언급이 잦다.
+      </div>
+      <div class="card" id="c4">
+        <div class="src"><span>ㄹ일보</span><span class="badge c">+0.71</span></div>
+        <div class="tit">경영계 "불법 파업 면책법"… 투자 위축 우려 확산</div>
+        <div class="why">근거 보기 ▾</div>
+      </div>
+      <div class="evi hidden">
+        <div class="h">이 기사가 +0.71인 이유</div>
+        <ul>
+          <li>· <b>인용 구조</b>: 경영계·야당 인용 5회(우호) vs 노동계 1회</li>
+          <li>· <b>책임 귀인</b>: 갈등 심화 원인을 "무리한 입법"으로 귀속</li>
+          <li>· <b>어휘 선택</b>: "불법 파업 면책법", "투자 위축"</li>
+        </ul>
+      </div>
+      <div class="card" id="c5">
+        <div class="src"><span>ㅁ경제</span><span class="badge c">+0.55</span></div>
+        <div class="tit">기업들 "노사 리스크 커졌다"… 헌법소원 검토</div>
+        <div class="why">근거 보기 ▾</div>
+      </div>
+      <div class="evi hidden">
+        <div class="h">이 기사가 +0.55인 이유</div>
+        <ul>
+          <li>· <b>인용 구조</b>: 기업 관계자 인용 4회, 노동계 0회</li>
+          <li>· <b>책임 귀인</b>: 향후 리스크를 법 개정 자체에 귀속</li>
+          <li>· <b>어휘 선택</b>: "노사 리스크", "헌법소원 검토"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash" id="dash">
+    <div class="panel">
+      <div class="h">내 소비 좌표 (최근 30일, 기사 142건)</div>
+      <div class="gauge"><span class="gpin"><span class="v">+0.18</span><span class="stem"></span></span></div>
+      <div class="glab"><span>−1.0 진보측</span><span>0 중립</span><span>+1.0 보수측</span></div>
+    </div>
+    <div class="panel">
+      <div class="h">내 소비 분포</div>
+      <div class="bars">
+        <div class="bar p" style="height:22%" data-tip="−1.0 ~ −0.6 구간 · 9건 (6%)"></div>
+        <div class="bar p" style="height:34%" data-tip="−0.6 ~ −0.2 구간 · 14건 (10%)"></div>
+        <div class="bar n" style="height:58%" data-tip="−0.2 ~ 0 구간 · 24건 (17%)"></div>
+        <div class="bar n" style="height:100%" data-tip="0 ~ +0.2 구간 · 41건 (29%)"></div>
+        <div class="bar c" style="height:72%" data-tip="+0.2 ~ +0.6 구간 · 30건 (21%)"></div>
+        <div class="bar c" style="height:30%" data-tip="+0.6 ~ +1.0 구간 · 12건 (8%)"></div>
+      </div>
+      <div class="blab"><span>−1</span><span>−0.5</span><span>0−</span><span>0+</span><span>+0.5</span><span>+1</span></div>
+    </div>
+    <div class="panel">
+      <div class="h">놓치고 있는 관점</div>
+      <div class="blind">
+        <span class="warn">진보측 블라인드스팟</span><br>
+        최근 30일간 <b>진보측 기사</b>를 평소보다 적게 읽었어요.<br>
+        이 이슈의 진보측 대표 기사 2건을 확인해 보세요 →
+      </div>
+    </div>
+  </div>
+</div>
+<div class="note">그림 5-3. 뉴스펙트럼 이슈별 스펙트럼 뷰 및 이용자 소비 좌표 대시보드 화면 설계(안). 언론사명·기사·수치는 예시.</div>
+<div class="tip" id="tip"></div>
+
+<script>
+(function(){
+  var tip = document.getElementById('tip');
+
+  function showTip(html, x, y){
+    tip.innerHTML = html;
+    tip.style.display = 'block';
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var left = Math.min(Math.max(x - w/2, 8), window.innerWidth - w - 8);
+    tip.style.left = left + 'px';
+    tip.style.top = (y - h - 14) + 'px';
+  }
+  function hideTip(){ tip.style.display = 'none'; }
+
+  // 스펙트럼 점·분포 막대: 호버 툴팁 (데이터는 예시)
+  document.querySelectorAll('[data-tip]').forEach(function(el){
+    el.addEventListener('mousemove', function(e){ showTip(el.getAttribute('data-tip'), e.clientX, e.clientY); });
+    el.addEventListener('mouseleave', hideTip);
+  });
+
+  // 스펙트럼 점 클릭 → 해당 기사 카드 강조
+  document.querySelectorAll('.adot[data-card]').forEach(function(el){
+    el.addEventListener('click', function(){
+      document.querySelectorAll('.card.hl').forEach(function(c){ c.classList.remove('hl'); });
+      var card = document.getElementById(el.getAttribute('data-card'));
+      if(card){ card.classList.add('hl'); card.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+    });
+  });
+
+  // 근거 보기 펼치기/접기 (카드 다음 형제 .evi 토글)
+  document.querySelectorAll('.why').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var evi = btn.closest('.card').nextElementSibling;
+      if(!evi || !evi.classList.contains('evi')) return;
+      var open = evi.classList.toggle('hidden');
+      btn.textContent = open ? '근거 보기 ▾' : '근거 보기 ▴';
+    });
+  });
+
+  // 탭 전환: 이슈 탐색 목록 표시 / 내 스펙트럼은 대시보드 강조
+  var tabs = document.querySelectorAll('#tabs span');
+  var explore = document.getElementById('explore');
+  var dash = document.getElementById('dash');
+  tabs.forEach(function(tab, i){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('on'); });
+      tab.classList.add('on');
+      explore.style.display = (i === 1) ? 'block' : 'none';
+      dash.classList.remove('hl');
+      if(i === 2){
+        dash.classList.add('hl');
+        dash.scrollIntoView({behavior:'smooth', block:'center'});
+        setTimeout(function(){ dash.classList.remove('hl'); }, 1600);
+      }
+    });
+  });
+
+  // 이슈 탐색: 예시 이슈 선택 시 헤더 교체 (수치는 예시)
+  var issues = [
+    {t:'노란봉투법(노동조합법 2·3조 개정안) 국회 통과', m:'분석 기사 47건 · 앵커: 더불어민주당 논평 3건 / 국민의힘 논평 4건 · 갱신 10분 전'},
+    {t:'2026년 최저임금 결정… 노사 반응 엇갈려',        m:'분석 기사 38건 · 앵커: 더불어민주당 논평 2건 / 국민의힘 논평 2건 · 갱신 25분 전'},
+    {t:'반도체 특별법 국회 상임위 통과',                m:'분석 기사 29건 · 앵커: 더불어민주당 논평 1건 / 국민의힘 논평 2건 · 갱신 1시간 전'}
+  ];
+  document.querySelectorAll('#explore .row').forEach(function(row){
+    row.addEventListener('click', function(){
+      document.querySelectorAll('#explore .row').forEach(function(r){ r.classList.remove('sel'); });
+      row.classList.add('sel');
+      var it = issues[+row.getAttribute('data-i')];
+      document.getElementById('issueTitle').textContent = it.t;
+      document.getElementById('issueMeta').textContent = it.m;
+    });
+  });
+})();
+</script>
+</body>
+</html>
